@@ -42,7 +42,9 @@ int umain(const std::vector<std::string>& args, const std::vector<std::string>& 
 		
 			obj.process();
 		}
-		else if (set.infile.filetype == nstool::Settings::FILE_TYPE_PARTITIONFS || set.infile.filetype == nstool::Settings::FILE_TYPE_NSP)
+		else if (set.infile.filetype == nstool::Settings::FILE_TYPE_PARTITIONFS ||
+			set.infile.filetype == nstool::Settings::FILE_TYPE_NSP ||
+			set.infile.filetype == nstool::Settings::FILE_TYPE_NSZ)
 		{
 			nstool::PfsProcess obj;
 
@@ -54,7 +56,7 @@ int umain(const std::vector<std::string>& args, const std::vector<std::string>& 
 			obj.setShowFsTree(set.fs.show_fs_tree);
 			obj.setExtractJobs(set.fs.extract_jobs);
 			
-			obj.process();
+			obj.process(set.infile.filetype == nstool::Settings::FILE_TYPE_NSZ);
 		}
 		
 		else if (set.infile.filetype == nstool::Settings::FILE_TYPE_ROMFS)

@@ -332,6 +332,10 @@ public:
 		{
 			mParam = nstool::Settings::FILE_TYPE_NSP;
 		}
+		else if (params[0] == "nsz")
+		{
+			mParam = nstool::Settings::FILE_TYPE_NSZ;
+		}
 		else if (params[0] == "partitionfs" || params[0] == "hashedpartitionfs" \
 		 || params[0] == "pfs" || params[0] == "pfs0"  \
 		 || params[0] == "hfs" || params[0] == "hfs0")
@@ -710,7 +714,9 @@ void nstool::SettingsInitializer::determine_filetype()
 	else if (_ASSERT_FILE_SIZE(sizeof(pie::hac::sPfsHeader))
 	      && _TYPE_PTR(pie::hac::sPfsHeader)->st_magic.unwrap() == pie::hac::pfs::kPfsStructMagic)
 	{
-		infile.filetype = FILE_TYPE_PARTITIONFS;
+		const std::string& name = infile.path.get().back();
+		const bool is_nsz = name.size() >= 4 && name.compare(name.size() - 4, 4, ".nsz") == 0;
+		infile.filetype = is_nsz ? FILE_TYPE_NSZ : FILE_TYPE_PARTITIONFS;
 	}
 	// detect HFS0
 	else if (_ASSERT_FILE_SIZE(sizeof(pie::hac::sPfsHeader))
@@ -801,7 +807,7 @@ void nstool::SettingsInitializer::usage_text() const
 	fmt::print("\n  General Options:\n");
 	fmt::print("      -d, --dev       Use devkit keyset.\n");
 	fmt::print("      -k, --keyset    Specify keyset file.\n");
-	fmt::print("      -t, --type      Specify input file type. [xci, pfs, romfs, nca, meta, cnmt, nso, nro, ini, kip, nacp, aset, cert, tik]\n");
+	fmt::print("      -t, --type      Specify input file type. [xci, nsp, nsz, pfs, romfs, nca, meta, cnmt, nso, nro, ini, kip, nacp, aset, cert, tik]\n");
 	fmt::print("      -y, --verify    Verify file.\n");
 	fmt::print("\n  Output Options:\n");
 	fmt::print("      --showkeys      Show keys generated.\n");

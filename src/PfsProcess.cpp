@@ -1,4 +1,5 @@
 #include "PfsProcess.h"
+#include "NczStream.h"
 #include "util.h"
 
 #include <pietendo/hac/PartitionFsUtil.h>
@@ -17,10 +18,9 @@ nstool::PfsProcess::PfsProcess() :
 	mFileSystem(),
 	mFsProcess()
 {
-	mFsProcess.setFsFormatName("PartitionFs");
 }
 
-void nstool::PfsProcess::process()
+void nstool::PfsProcess::process(bool decompress_ncz)
 {
 	if (mFile == nullptr)
 	{
@@ -62,7 +62,38 @@ void nstool::PfsProcess::process()
 	mPfs.fromBytes(scratch.data(), scratch.size());
 
 	// create virtual filesystem
-	mFileSystem = std::make_shared<tc::io::VirtualFileSystem>(tc::io::VirtualFileSystem(pie::hac::PartitionFsSnapshotGenerator(mFile, mVerify ? pie::hac::PartitionFsSnapshotGenerator::ValidationMode_Warn : pie::hac::PartitionFsSnapshotGenerator::ValidationMode_None)));
+	if (decompress_ncz && mPfs.getFsType() != pie::hac::PartitionFsHeader::TYPE_PFS0)
+	{
+		throw tc::Exception(mModuleName, "NSZ requires a PFS0 container.");
+	}
+	pie::hac::PartitionFsSnapshotGenerator snapshot(mFile, mVerify ?
+		pie::hac::PartitionFsSnapshotGenerator::ValidationMode_Warn :
+		pie::hac::PartitionFsSnapshotGenerator::ValidationMode_None);
+	if (decompress_ncz)
+	{
+		auto& listing = snapshot.dir_entries.front().dir_listing;
+		for (auto& name : listing.file_list)
+		{
+			if (name.size() < 4 || name.compare(name.size() - 4, 4, ".ncz") != 0)
+				continue;
+
+			const auto compressed_path = listing.abs_path + name;
+			const auto file = snapshot.file_entry_path_map.find(compressed_path);
+			if (file == snapshot.file_entry_path_map.end())
+				throw tc::Exception(mModuleName, fmt::format("Duplicate NSZ entry: {:s}", name));
+
+			name.back() = 'a';
+			const auto restored_path = listing.abs_path + name;
+			if (!snapshot.file_entry_path_map.emplace(restored_path, file->second).second)
+				throw tc::Exception(mModuleName, fmt::format("Duplicate NSZ entry: {:s}", name));
+
+			auto& entry = snapshot.file_entries[file->second];
+			entry.stream = std::make_shared<NczStream>(entry.stream);
+			snapshot.file_entry_path_map.erase(file);
+		}
+	}
+	mFsProcess.setFsFormatName(decompress_ncz ? "NSZ" : "PartitionFs");
+	mFileSystem = std::make_shared<tc::io::VirtualFileSystem>(snapshot);
 	mFsProcess.setInputFileSystem(mFileSystem);
 
 	// set properties for FsProcess

@@ -7,6 +7,7 @@ General purpose reading/extraction tool for Nintendo Switch file formats.
 * RomFs (.romfs)
 * Nintendo Content Archive (.nca)
 * Nintendo Submission Package (.nsp)
+* Compressed Nintendo Submission Package (.nsz)
 * NX GameCard Image (.xci)
 * Meta (`META`) (.npdm)
 * Nintendo Application Control Property (.nacp)
@@ -55,6 +56,7 @@ In that example `cnmt` was selected, NSTool would process the file as `Content M
 | ----------- | --------------- |
 | gc, xci     | NX GameCard Image |
 | nsp         | Nintendo Submission Package |
+| nsz         | Compressed Nintendo Submission Package |
 | pfs         | PartitionFs |
 | hfs         | Sha256PartitionFs |
 | romfs       | RomFs |
@@ -141,7 +143,22 @@ nstool -x /path/to/a/file.bin ./extract_dir/different_name.bin some_file.bin
 * RomFs (including RomFs embedded in Homebrew NRO)
 * NCA
 * NSP
+* NSZ
 * XCI
+
+### NSZ packages
+
+List or extract an NSZ package with the same options as an NSP.
+
+```sh
+nstool --fstree package.nsz
+nstool -x ./extract_dir package.nsz
+```
+
+NSTool lists compressed members under their restored `.nca` names and
+reconstructs them during extraction. Both solid and block compression are
+supported. Package extraction needs no Switch keys. Reading the resulting NCAs
+uses the usual NCA options. Use `-t nsz` if the package has a different extension.
 
 ## NCA Patches
 Nintendo distributes game patches/updates in the style of a diff to keep file sizes down. This means extracting game patches requires the base version of the game to be able to process patch data. Typically this is only done for the Program NCA.

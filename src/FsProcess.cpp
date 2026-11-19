@@ -210,10 +210,6 @@ void nstool::FsProcess::visitDir(const tc::io::Path& v_path, const tc::io::Path&
 	}
 
 	// iterate thru child files
-	size_t cache_read_len;
-	tc::io::Path out_path;
-	std::shared_ptr<tc::io::IStream> in_stream;
-	std::shared_ptr<tc::io::IStream> out_stream;
 	for (auto itr = info.file_list.begin(); itr != info.file_list.end(); itr++)
 	{
 		if (print_fs)
@@ -224,29 +220,12 @@ void nstool::FsProcess::visitDir(const tc::io::Path& v_path, const tc::io::Path&
 		}
 		if (extract_fs)
 		{
-			// build out path
-			out_path = l_path + *itr;
-
+			const auto out_path = l_path + *itr;
 			fmt::print("Saving {:s}...\n", out_path.to_string());
 
-			// begin export
+			std::shared_ptr<tc::io::IStream> in_stream;
 			mInputFs->openFile(v_path + *itr, tc::io::FileMode::Open, tc::io::FileAccess::Read, in_stream);
-			local_fs.openFile(out_path, tc::io::FileMode::OpenOrCreate, tc::io::FileAccess::Write, out_stream);
-
-			in_stream->seek(0, tc::io::SeekOrigin::Begin);
-			out_stream->seek(0, tc::io::SeekOrigin::Begin);
-			for (int64_t remaining_data = in_stream->length(); remaining_data > 0;)
-			{
-				cache_read_len = in_stream->read(mDataCache.data(), mDataCache.size());
-				if (cache_read_len == 0)
-				{
-					throw tc::io::IOException(mModuleLabel, fmt::format("Failed to read from {:s}file.", (mFsFormatName.isSet() ? (mFsFormatName.get() + " ") : "")));
-				}
-
-				out_stream->write(mDataCache.data(), cache_read_len);
-
-				remaining_data -= int64_t(cache_read_len);
-			}
+			writeStreamToFile(in_stream, out_path, mDataCache);
 		}
 	}
 

@@ -11,7 +11,7 @@ class PfsProcess
 public:
 	PfsProcess();
 
-	void process();
+	void process(bool decompress_ncz = false);
 
 	// generic
 	void setInputFile(const std::shared_ptr<tc::io::IStream>& file);

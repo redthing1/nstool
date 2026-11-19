@@ -98,10 +98,13 @@ void nstool::writeStreamToStream(const std::shared_ptr<tc::io::IStream>& in_stre
 		cache_read_len = in_stream->read(cache.data(), cache.size());
 		if (cache_read_len == 0)
 		{
-			throw tc::io::IOException("nstool::writeStreamToStream()", "Failed to read from source streeam.");
+			throw tc::io::IOException("nstool::writeStreamToStream()", "Failed to read from source stream.");
 		}
 
-		out_stream->write(cache.data(), cache_read_len);
+		if (out_stream->write(cache.data(), cache_read_len) != cache_read_len)
+		{
+			throw tc::io::IOException("nstool::writeStreamToStream()", "Failed to write to destination stream.");
+		}
 
 		remaining_data -= int64_t(cache_read_len);
 	}

@@ -13,3 +13,6 @@
 [submodule "deps/libpietendo"]
 	path = deps/libpietendo
 	url = https://github.com/jakcron/libpietendo.git
+[submodule "deps/zstd"]
+	path = deps/zstd
+	url = https://github.com/facebook/zstd.git

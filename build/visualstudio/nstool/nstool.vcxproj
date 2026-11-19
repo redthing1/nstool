@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include;$(SolutionDir)..\..\deps\zstd\lib</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -86,7 +86,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include;$(SolutionDir)..\..\deps\zstd\lib</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -98,7 +98,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include;$(SolutionDir)..\..\deps\zstd\lib</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -114,7 +114,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\include;$(SolutionDir)..\..\deps\liblz4\include;$(SolutionDir)..\..\deps\libtoolchain\include;$(SolutionDir)..\..\deps\libfmt\include;$(SolutionDir)..\..\deps\libpietendo\include;$(SolutionDir)..\..\deps\zstd\lib</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -154,6 +154,7 @@
     <ClInclude Include="..\..\..\src\MetaProcess.h" />
     <ClInclude Include="..\..\..\src\NacpProcess.h" />
     <ClInclude Include="..\..\..\src\NcaProcess.h" />
+    <ClInclude Include="..\..\..\src\NczStream.h" />
     <ClInclude Include="..\..\..\src\NroProcess.h" />
     <ClInclude Include="..\..\..\src\NsoProcess.h" />
     <ClInclude Include="..\..\..\src\PfsProcess.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="..\..\..\src\MetaProcess.cpp" />
     <ClCompile Include="..\..\..\src\NacpProcess.cpp" />
     <ClCompile Include="..\..\..\src\NcaProcess.cpp" />
+    <ClCompile Include="..\..\..\src\NczStream.cpp" />
     <ClCompile Include="..\..\..\src\NroProcess.cpp" />
     <ClCompile Include="..\..\..\src\NsoProcess.cpp" />
     <ClCompile Include="..\..\..\src\PfsProcess.cpp" />
@@ -190,6 +192,11 @@
     <ClCompile Include="..\..\..\src\SdkApiString.cpp" />
     <ClCompile Include="..\..\..\src\Settings.cpp" />
     <ClCompile Include="..\..\..\src\util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(SolutionDir)..\..\deps\zstd\lib\common\*.c;$(SolutionDir)..\..\deps\zstd\lib\decompress\*.c">
+      <PreprocessorDefinitions>ZSTD_DISABLE_ASM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
