@@ -567,6 +567,14 @@ nstool::SettingsInitializer::SettingsInitializer(const std::vector<std::string>&
 		opt.cli_output_mode.show_layout = true;
 	}
 
+	if (opt.convert_path.isSet())
+	{
+		if (infile.filetype == FILE_TYPE_ERROR)
+			determine_filetype();
+		if (infile.filetype == FILE_TYPE_NSZ && !mShowKeydata)
+			return;
+	}
+
 	// locate key file, if not specfied
 	if (mKeysetPath.isNull())
 	{
@@ -640,6 +648,7 @@ void nstool::SettingsInitializer::parse_args(const std::vector<std::string>& arg
 
 	// process input file type
 	opts.registerOptionHandler(std::shared_ptr<FileTypeOptionHandler>(new FileTypeOptionHandler(infile.filetype, { "-t", "--type" })));
+	opts.registerOptionHandler(std::shared_ptr<SingleParamPathOptionHandler>(new SingleParamPathOptionHandler(opt.convert_path, { "--convert" })));
 
 	// get user-provided keydata
 	opts.registerOptionHandler(std::shared_ptr<SingleParamPathOptionHandler>(new SingleParamPathOptionHandler(mKeysetPath, {"-k", "--keyset"})));
@@ -813,10 +822,12 @@ void nstool::SettingsInitializer::usage_text() const
 	fmt::print("      --showkeys      Show keys generated.\n");
 	fmt::print("      --showlayout    Show layout metadata.\n");
 	fmt::print("      -v, --verbose   Verbose output.\n");
-	fmt::print("\n  PFS0/HFS0 (PartitionFs), RomFs, NSP (Nintendo Submission Package)\n");
+	fmt::print("\n  PFS0/HFS0 (PartitionFs), RomFs, NSP, NSZ\n");
 	fmt::print("    {:s} [--fstree] [-x [<virtual path>] <out path>] <file>\n", BIN_NAME);
 	fmt::print("      --fstree        Print filesystem tree.\n");
 	fmt::print("      -x, --extract   Extract a file or directory to local filesystem.\n");
+	fmt::print("\n  NSP/NSZ Package Conversion\n");
+	fmt::print("    {:s} [-k <keyset>] --convert <output.nsp|output.nsz> <input>\n", BIN_NAME);
 	fmt::print("\n  XCI (GameCard Image)\n");
 	fmt::print("    {:s} [--fstree] [-x [<virtual path>] <out path>] <.xci file>\n", BIN_NAME);
 	fmt::print("      --fstree        Print filesystem tree.\n");

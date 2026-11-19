@@ -44,6 +44,7 @@ struct Settings
 		bool verify;
 		bool is_dev;
 		KeyBag keybag;
+		tc::Optional<tc::io::Path> convert_path;
 	} opt;
 
 	// code options

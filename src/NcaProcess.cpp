@@ -23,11 +23,7 @@ nstool::NcaProcess::NcaProcess() :
 
 void nstool::NcaProcess::process()
 {
-	// import header
-	importHeader();
-
-	// determine keys
-	generateNcaBodyEncryptionKeys();
+	readHeader();
 
 	// import/generate fs header data
 	generatePartitionConfiguration();
@@ -42,6 +38,12 @@ void nstool::NcaProcess::process()
 
 	// process partition
 	processPartitions();
+}
+
+void nstool::NcaProcess::readHeader()
+{
+	importHeader();
+	generateNcaBodyEncryptionKeys();
 }
 
 void nstool::NcaProcess::setInputFile(const std::shared_ptr<tc::io::IStream>& file)
@@ -131,6 +133,9 @@ void nstool::NcaProcess::generateNcaBodyEncryptionKeys()
 	// get key data from header
 	byte_t masterkey_rev = pie::hac::AesKeygen::getMasterKeyRevisionFromKeyGeneration(mHdr.getKeyGeneration());
 	byte_t keak_index = mHdr.getKeyAreaEncryptionKeyIndex();
+	if (keak_index >= KeyBag::kNcaKeakNum)
+		throw tc::Exception(mModuleName, "Invalid NCA key area encryption key index.");
+	mContentKey.kak_list.clear();
 
 	// process key area
 	sKeys::sKeyAreaKey kak;

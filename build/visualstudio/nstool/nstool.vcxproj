@@ -155,6 +155,9 @@
     <ClInclude Include="..\..\..\src\NacpProcess.h" />
     <ClInclude Include="..\..\..\src\NcaProcess.h" />
     <ClInclude Include="..\..\..\src\NczStream.h" />
+    <ClInclude Include="..\..\..\src\NczFormat.h" />
+    <ClInclude Include="..\..\..\src\NczWriter.h" />
+    <ClInclude Include="..\..\..\src\PackageConvert.h" />
     <ClInclude Include="..\..\..\src\NroProcess.h" />
     <ClInclude Include="..\..\..\src\NsoProcess.h" />
     <ClInclude Include="..\..\..\src\PfsProcess.h" />
@@ -183,6 +186,8 @@
     <ClCompile Include="..\..\..\src\NacpProcess.cpp" />
     <ClCompile Include="..\..\..\src\NcaProcess.cpp" />
     <ClCompile Include="..\..\..\src\NczStream.cpp" />
+    <ClCompile Include="..\..\..\src\NczWriter.cpp" />
+    <ClCompile Include="..\..\..\src\PackageConvert.cpp" />
     <ClCompile Include="..\..\..\src\NroProcess.cpp" />
     <ClCompile Include="..\..\..\src\NsoProcess.cpp" />
     <ClCompile Include="..\..\..\src\PfsProcess.cpp" />
@@ -194,7 +199,7 @@
     <ClCompile Include="..\..\..\src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)..\..\deps\zstd\lib\common\*.c;$(SolutionDir)..\..\deps\zstd\lib\decompress\*.c">
+    <ClCompile Include="$(SolutionDir)..\..\deps\zstd\lib\common\*.c;$(SolutionDir)..\..\deps\zstd\lib\decompress\*.c;$(SolutionDir)..\..\deps\zstd\lib\compress\*.c">
       <PreprocessorDefinitions>ZSTD_DISABLE_ASM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemGroup>

@@ -5,6 +5,7 @@
 
 #include "GameCardProcess.h"
 #include "PfsProcess.h"
+#include "PackageConvert.h"
 #include "RomfsProcess.h"
 #include "NcaProcess.h"
 #include "MetaProcess.h"
@@ -27,7 +28,18 @@ int umain(const std::vector<std::string>& args, const std::vector<std::string>& 
 		
 		std::shared_ptr<tc::io::IStream> infile_stream = std::make_shared<tc::io::FileStream>(tc::io::FileStream(set.infile.path.get(), tc::io::FileMode::Open, tc::io::FileAccess::Read));
 
-		if (set.infile.filetype == nstool::Settings::FILE_TYPE_GAMECARD)
+		if (set.opt.convert_path.isSet())
+		{
+			if (set.fs.show_fs_tree || !set.fs.extract_jobs.empty())
+				throw tc::ArgumentException("--convert cannot be combined with --fstree or --extract.");
+			if (set.infile.filetype != nstool::Settings::FILE_TYPE_NSP &&
+				set.infile.filetype != nstool::Settings::FILE_TYPE_NSZ &&
+				set.infile.filetype != nstool::Settings::FILE_TYPE_PARTITIONFS)
+				throw tc::ArgumentException("--convert requires an NSP or NSZ input.");
+			nstool::convertPackage(infile_stream, set.infile.filetype == nstool::Settings::FILE_TYPE_NSZ,
+				set.opt.convert_path.get(), set.opt.keybag);
+		}
+		else if (set.infile.filetype == nstool::Settings::FILE_TYPE_GAMECARD)
 		{	
 			nstool::GameCardProcess obj;
 

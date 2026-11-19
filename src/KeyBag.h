@@ -22,6 +22,7 @@ struct KeyBag
 	using broadon_issuer_t = std::string;
 	static const size_t kNcaKeakNum = pie::hac::nca::kKeyAreaEncryptionKeyNum;
 
+	void importTicket(tc::io::IStream& stream, const std::string& name, bool replace = true);
 
 	// acid
 	std::map<key_generation_t, rsa_key_t> acid_sign_key;

@@ -556,18 +556,22 @@ void nstool::KeyBagInitializer::importTicket(const tc::io::Path& tik_path)
 		return;
 	}
 
-	// check size
-	size_t tik_raw_size = tc::io::IOUtil::castInt64ToSize(tik_stream->length());
-	if (tik_raw_size > 0x10000)
+	KeyBag::importTicket(*tik_stream, tik_path.to_string());
+}
+
+void nstool::KeyBag::importTicket(tc::io::IStream& stream, const std::string& name, bool replace)
+{
+	size_t tik_raw_size = tc::io::IOUtil::castInt64ToSize(stream.length());
+	if (tik_raw_size == 0 || tik_raw_size > 0x10000)
 	{
-		fmt::print("[WARNING] Ticket \"{:s}\" was too large.\n", tik_path.to_string());
+		fmt::print("[WARNING] Ticket \"{:s}\" has an invalid size.\n", name);
 		return;
 	}
 
-	// import cert data
 	tc::ByteData tik_raw = tc::ByteData(tik_raw_size);
-	tik_stream->seek(0, tc::io::SeekOrigin::Begin);
-	tik_stream->read(tik_raw.data(), tik_raw.size());
+	stream.seek(0, tc::io::SeekOrigin::Begin);
+	if (stream.read(tik_raw.data(), tik_raw.size()) != tik_raw.size())
+		throw tc::io::IOException("nstool::KeyBag::importTicket", "Failed to read ticket.");
 
 	pie::hac::es::SignedData<pie::hac::es::TicketBody_V2> tik;
 	try {
@@ -577,6 +581,8 @@ void nstool::KeyBagInitializer::importTicket(const tc::io::Path& tik_path)
 		// save rights id
 		rights_id_t rights_id;
 		memcpy(rights_id.data(), tik.getBody().getRightsId(), rights_id.size());
+		if (!replace && (external_content_keys.count(rights_id) || external_enc_content_keys.count(rights_id)))
+			return;
 		
 		// check ticket is not personalised
 		if (tik.getBody().getTitleKeyEncType() != pie::hac::es::ticket::AES128_CBC)
@@ -622,7 +628,7 @@ void nstool::KeyBagInitializer::importTicket(const tc::io::Path& tik_path)
 		
 	}
 	catch (tc::Exception& e) {
-		fmt::print("[WARNING] Ticket \"{:s}\" is corrupted ({:s}).\n", tik_path.to_string(), e.error());
+		fmt::print("[WARNING] Ticket \"{:s}\" is corrupted ({:s}).\n", name, e.error());
 		return;
 	}
 }

@@ -43,7 +43,7 @@ ifneq ($(PROJECT_DEPEND),)
 	LIB += $(foreach dep,$(PROJECT_DEPEND), -l$(dep))
 endif
 
-# Zstandard is built as a static decoder.
+# Zstandard is linked statically.
 ZSTD_PATH = $(ROOT_PROJECT_DEPENDENCY_PATH)/zstd/lib
 INC += -I"$(ZSTD_PATH)"
 LIB += "$(ZSTD_PATH)/libzstd.a"
@@ -187,7 +187,7 @@ endif
 .PHONY: deps
 deps:
 	@$(foreach lib,$(PROJECT_DEPEND_LOCAL_DIR), cd "$(ROOT_PROJECT_DEPENDENCY_PATH)/$(lib)" && $(MAKE) static_lib && cd "$(PROJECT_PATH)";)
-	$(MAKE) -C "$(ZSTD_PATH)" libzstd.a ZSTD_LIB_COMPRESSION=0 ZSTD_LEGACY_SUPPORT=0 CC="$(CC)" AR="$(AR)" CFLAGS="-O3 $(ARCHFLAGS)"
+	$(MAKE) -C "$(ZSTD_PATH)" libzstd.a ZSTD_LIB_DICTBUILDER=0 ZSTD_LEGACY_SUPPORT=0 CC="$(CC)" AR="$(AR)" CFLAGS="-O3 $(ARCHFLAGS)"
 
 .PHONY: clean_deps
 clean_deps:

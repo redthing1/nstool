@@ -88,22 +88,24 @@ void nstool::writeStreamToFile(const std::shared_ptr<tc::io::IStream>& in_stream
 
 void nstool::writeStreamToStream(const std::shared_ptr<tc::io::IStream>& in_stream, const std::shared_ptr<tc::io::IStream>& out_stream, tc::ByteData& cache)
 {
-	// iterate thru child files
-	size_t cache_read_len;
-	
-	in_stream->seek(0, tc::io::SeekOrigin::Begin);
 	out_stream->seek(0, tc::io::SeekOrigin::Begin);
-	for (int64_t remaining_data = in_stream->length(); remaining_data > 0;)
+	copyStream(*in_stream, *out_stream, cache);
+}
+
+void nstool::copyStream(tc::io::IStream& input, tc::io::IStream& output, tc::ByteData& cache)
+{
+	input.seek(0, tc::io::SeekOrigin::Begin);
+	for (int64_t remaining_data = input.length(); remaining_data > 0;)
 	{
-		cache_read_len = in_stream->read(cache.data(), cache.size());
+		const size_t cache_read_len = input.read(cache.data(), cache.size());
 		if (cache_read_len == 0)
 		{
-			throw tc::io::IOException("nstool::writeStreamToStream()", "Failed to read from source stream.");
+			throw tc::io::IOException("nstool::copyStream()", "Failed to read from source stream.");
 		}
 
-		if (out_stream->write(cache.data(), cache_read_len) != cache_read_len)
+		if (output.write(cache.data(), cache_read_len) != cache_read_len)
 		{
-			throw tc::io::IOException("nstool::writeStreamToStream()", "Failed to write to destination stream.");
+			throw tc::io::IOException("nstool::copyStream()", "Failed to write to destination stream.");
 		}
 
 		remaining_data -= int64_t(cache_read_len);

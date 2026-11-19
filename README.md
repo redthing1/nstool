@@ -160,6 +160,19 @@ reconstructs them during extraction. Both solid and block compression are
 supported. Package extraction needs no Switch keys. Reading the resulting NCAs
 uses the usual NCA options. Use `-t nsz` if the package has a different extension.
 
+Use `--convert` to write a new package file.
+
+```sh
+nstool --convert package.nsp package.nsz
+nstool -k prod.keys --convert package.nsz package.nsp
+```
+
+NSP to NSZ conversion uses the configured Switch keys and any common tickets
+in the package. It uses solid Zstandard compression and keeps members in their
+original form when compression is unsupported or would increase their size.
+NSZ to NSP conversion requires no keys. Conversion preserves package members
+and rebuilds the PFS0 header. The output file must be new.
+
 ## NCA Patches
 Nintendo distributes game patches/updates in the style of a diff to keep file sizes down. This means extracting game patches requires the base version of the game to be able to process patch data. Typically this is only done for the Program NCA.
 

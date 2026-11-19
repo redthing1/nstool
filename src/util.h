@@ -12,6 +12,7 @@ void writeStreamToFile(const std::shared_ptr<tc::io::IStream>& in_stream, const 
 void writeStreamToFile(const std::shared_ptr<tc::io::IStream>& in_stream, const tc::io::Path& out_path, size_t cache_size = 0x10000);
 void writeStreamToStream(const std::shared_ptr<tc::io::IStream>& in_stream, const std::shared_ptr<tc::io::IStream>& out_stream, tc::ByteData& cache);
 void writeStreamToStream(const std::shared_ptr<tc::io::IStream>& in_stream, const std::shared_ptr<tc::io::IStream>& out_stream, size_t cache_size = 0x10000);
+void copyStream(tc::io::IStream& input, tc::io::IStream& output, tc::ByteData& cache);
 
 
 std::string getTruncatedBytesString(const byte_t* data, size_t len);

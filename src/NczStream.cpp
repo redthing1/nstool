@@ -1,6 +1,6 @@
 #include "NczStream.h"
 
-#include <tc/bn.h>
+#include "NczFormat.h"
 #include <tc/crypto/Aes128CtrEncryptor.h>
 #include <tc/io/StreamUtil.h>
 
@@ -11,21 +11,10 @@
 
 namespace {
 
-// https://github.com/nicoboss/nsz/blob/master/docs/formats.md
-const char* const kModuleName = "nstool::NczStream";
-const int64_t kHeaderSize = 0x4000;
-const size_t kBufferSize = 0x10000;
+using namespace nstool::ncz;
 
-struct SectionHeader
-{
-	tc::bn::le64<int64_t> offset;
-	tc::bn::le64<int64_t> size;
-	tc::bn::le64<uint64_t> crypto_type;
-	std::array<byte_t, 8> padding;
-	std::array<byte_t, 16> key;
-	std::array<byte_t, 16> counter;
-};
-static_assert(sizeof(SectionHeader) == 64, "NCZ section header size.");
+const char* const kModuleName = "nstool::NczStream";
+const size_t kBufferSize = 0x10000;
 
 struct BlockHeader
 {
@@ -188,7 +177,7 @@ nstool::NczStream::NczStream(const std::shared_ptr<tc::io::IStream>& file) :
 	tc::bn::le64<uint64_t> section_count;
 	readExact(*mFile, magic);
 	readExact(*mFile, section_count);
-	if (std::memcmp(magic, "NCZSECTN", sizeof(magic)) != 0)
+	if (std::memcmp(magic, kSectionMagic, sizeof(magic)) != 0)
 		throw tc::io::IOException(kModuleName, "Missing NCZSECTN header.");
 	if (section_count.unwrap() == 0 ||
 		section_count.unwrap() > uint64_t(mFile->length() - mFile->position()) / sizeof(SectionHeader))

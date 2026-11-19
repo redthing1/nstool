@@ -15,6 +15,10 @@ public:
 	NcaProcess();
 
 	void process();
+	void readHeader();
+	const pie::hac::ContentArchiveHeader& getHeader() const { return mHdr; }
+	const pie::hac::sContentArchiveHeaderBlock& getHeaderBlock() const { return mHdrBlock; }
+	const tc::Optional<KeyBag::aes128_key_t>& getAesCtrKey() const { return mContentKey.aes_ctr; }
 
 	// generic
 	void setInputFile(const std::shared_ptr<tc::io::IStream>& file);

@@ -12,6 +12,7 @@ public:
 	PfsProcess();
 
 	void process(bool decompress_ncz = false);
+	static pie::hac::PartitionFsHeader readHeader(tc::io::IStream& file);
 
 	// generic
 	void setInputFile(const std::shared_ptr<tc::io::IStream>& file);
@@ -41,8 +42,6 @@ private:
 	std::shared_ptr<tc::io::IFileSystem> mFileSystem;
 	FsProcess mFsProcess;
 	
-	size_t determineHeaderSize(const pie::hac::sPfsHeader* hdr);
-	bool validateHeaderMagic(const pie::hac::sPfsHeader* hdr);
 };
 
 }
